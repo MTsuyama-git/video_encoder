@@ -260,7 +260,7 @@ static int decode_packet(AVCodecContext* dec, const AVPacket *pkt, AVFrame* fram
     static char buffer[512];
     ret = avcodec_send_packet(dec, pkt);
     if( ret < 0 ) {
-        std::cerr << "Error submitting a packet for decodeing " << av_err2str(ret) << std::endl;
+        // std::cerr << "Error submitting a packet for decodeing " << av_err2str(ret) << std::endl;
         return ret;
     }
     
@@ -270,7 +270,7 @@ static int decode_packet(AVCodecContext* dec, const AVPacket *pkt, AVFrame* fram
             if(ret == AVERROR_EOF || ret == AVERROR(EAGAIN)) {
                 return 0;
             }
-            std::cerr << "Error during decodding " << av_err2str(ret) << std::endl;
+            // std::cerr << "Error during decodding " << av_err2str(ret) << std::endl;
             return ret;
         }
         if(dec->codec->type == AVMEDIA_TYPE_VIDEO)
