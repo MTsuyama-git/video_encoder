@@ -20,6 +20,7 @@ extern "C" {
 
 int step_traw_frame(FILE *f, int size, void* data, int width, int height);
 int step_jpeg_frame(uint8_t*, SDL_Renderer*, SDL_Texture*, SDL_Rect*, FILE*, int, int);
+uint32_t calc_time(struct timespec* start_time, struct timespec* end_time);
 
 int main(int argc, char** argv) {
     if(argc < 3) {
@@ -33,6 +34,7 @@ int main(int argc, char** argv) {
     int pixformat;
     static bool initialized;
 
+    struct timespec start_time, end_time;
     int ret;
     size_t i;
     char* cmd = argv[1];
@@ -95,6 +97,7 @@ int main(int argc, char** argv) {
     ret = 0;
     i = 0;
     while(ret == 0) {
+        clock_gettime(CLOCK_REALTIME, &start_time);
         SDL_Event e;
         if (SDL_PollEvent(&e)) {
             if(e.type == SDL_QUIT) {
@@ -106,7 +109,7 @@ int main(int argc, char** argv) {
                 }
             }
         }
-        if( i < nof) {
+        if(i < nof) {
             if(fmt == TRAW_FMT_ID) {
                 /* ret = step_traw_frame(f, width * height * 4); */
             }
@@ -115,6 +118,8 @@ int main(int argc, char** argv) {
             }
             ++i;
         }
+        clock_gettime(CLOCK_REALTIME, &end_time);
+        usleep((mspf - calc_time(&start_time, &end_time)) * 1000);
     }
     if(ret != 0) {
         fprintf(stderr, "Error occured at frame #%lu\n", i);
@@ -173,7 +178,6 @@ int step_jpeg_frame(uint8_t* bmp_buffer, SDL_Renderer* renderer, SDL_Texture* te
     int __width = cinfo.image_width;
     int __height = cinfo.image_height;
     int __ch = cinfo.num_components;
-    printf("%dx%d\n", __width, __height);
     jpeg_start_decompress(&cinfo);
     while (cinfo.output_scanline < cinfo.output_height) {
         buffer_array[0] = bmp_buffer + (cinfo.output_scanline) * __width * __ch;
@@ -192,3 +196,11 @@ int step_jpeg_frame(uint8_t* bmp_buffer, SDL_Renderer* renderer, SDL_Texture* te
     return 0;
 }
 
+
+uint32_t calc_time(struct timespec* start_time, struct timespec* end_time) {
+    int nsec, sec, result;
+    sec = end_time->tv_sec - start_time->tv_sec;
+    nsec = end_time->tv_nsec  - start_time->tv_nsec;
+    result =(nsec / 1000000 + sec * 1000) ;; 
+    return result;
+}
