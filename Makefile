@@ -20,19 +20,14 @@ CXXFLAGS	:=	-Wall $(OPT) $(foreach dir,$(INCLUDE_DIRS), -I$(dir)) `pkg-config --
 
 LDFLAGS		:=	$(foreach dir,$(LIBRARY_DIRS), -I$(dir)) `pkg-config --libs-only-L libjpeg libavcodec libavdevice libavfilter libavformat libavutil libswresample libswscale`
 
-TARGET		:=	$(BIN_DIR)/video2traw
-TARGET2		:=	$(BIN_DIR)/video2tjpeg
+TARGET		:=	$(BIN_DIR)/video2tjpeg
 
 VPATH		:=  $(SRC_DIR):$(OBJ_DIR)
 .SUFFIXES:	.cpp .o
 
-all: $(TARGET) $(TARGET2)
+all: $(TARGET)
 
-$(TARGET): $(OBJ_DIR)/decode_video_raw.o
-	mkdir -p $(dir $@)
-	$(CXX) -o $@ $(LDFLAGS) $^ $(LDLIBS)
-
-$(TARGET2): $(OBJ_DIR)/decode_video_jpg.o
+$(TARGET): $(OBJ_DIR)/decode_video_jpg.o
 	mkdir -p $(dir $@)
 	$(CXX) -o $@ $(LDFLAGS) $^ $(LDLIBS)
 
