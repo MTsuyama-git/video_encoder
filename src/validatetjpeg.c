@@ -119,7 +119,9 @@ int main(int argc, char** argv) {
             ++i;
         }
         clock_gettime(CLOCK_REALTIME, &end_time);
-        usleep((mspf - calc_time(&start_time, &end_time)) * 1000);
+        if(strcmp(argv[1], "fast")) {
+            usleep((mspf - calc_time(&start_time, &end_time)) * 1000);
+        }
     }
     if(ret != 0) {
         fprintf(stderr, "Error occured at frame #%lu\n", i);
