@@ -79,7 +79,7 @@ int main(int argc, char** argv) {
     else if(fmt == TJPG_FMT_ID){
         pixformat=SDL_PIXELFORMAT_RGB24;
         fprintf(stdout, "tjpg format\r\n");
-        bmp_buffer = (uint8_t*)malloc(480 * 320 * 3);
+        bmp_buffer = (uint8_t*)malloc(width * height * 3);
     }
 
     fprintf(stdout, "VERSION    :0x%04X\n", ver);
@@ -180,6 +180,8 @@ int step_jpeg_frame(uint8_t* bmp_buffer, SDL_Renderer* renderer, SDL_Texture* te
     int __width = cinfo.image_width;
     int __height = cinfo.image_height;
     int __ch = cinfo.num_components;
+    /* printf("width: %d\n", __width); */
+    /* printf("height: %d\n", __height); */
     jpeg_start_decompress(&cinfo);
     while (cinfo.output_scanline < cinfo.output_height) {
         buffer_array[0] = bmp_buffer + (cinfo.output_scanline) * __width * __ch;
